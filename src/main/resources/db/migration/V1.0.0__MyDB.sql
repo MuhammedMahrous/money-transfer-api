@@ -1,0 +1,18 @@
+--create table account
+--(
+--  id int,
+--  balance decimal,
+--  currency varchar(3)
+--);
+--
+--insert into account(id, balance, currency) values (123, 100, 'EUR');
+--insert into account(id, balance, currency) values (456, 20, 'USD');
+--
+--create table money_transfer
+--(
+--  id int,
+--  source_account_id int,
+--  target_account_id int,
+--  amount decimal,
+--  currency varchar(3)
+--);
