@@ -1,7 +1,7 @@
 package com.revolut.unit.api;
 
 import com.revolut.model.MoneyTransfer;
-import com.revolut.unit.api.util.MoneyTransferAPITestsSetup;
+import com.revolut.unit.api.setup.MoneyTransferAPITestsSetup;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -105,6 +105,23 @@ public class MoneyTransferAPITests {
                 .statusCode(400).
                 body("code", equalTo(1000),
                         "message", equalTo("currency can't be null"));
+
+    }
+
+    @Test
+    @DisplayName("Test Unkown Currency Not Accepted")
+    void unkownCurrency() throws IOException {
+        String moneyTransferRequest = MoneyTransferAPITestsSetup.readStringMoneyTransferRequestFromFile("/requests/unkownCurrency.json");
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(moneyTransferRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1000),
+                        "message", equalTo("Couldn't map value: [XYZ] into type: [Currency]"));
 
     }
 }
