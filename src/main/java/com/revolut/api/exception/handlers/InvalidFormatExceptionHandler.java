@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.util.Currency;
 
 @Provider
 @Slf4j

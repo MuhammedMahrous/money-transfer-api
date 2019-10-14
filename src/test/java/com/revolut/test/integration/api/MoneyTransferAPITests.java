@@ -1,7 +1,7 @@
-package com.revolut.unit.api;
+package com.revolut.test.integration.api;
 
 import com.revolut.model.MoneyTransfer;
-import com.revolut.unit.api.setup.MoneyTransferAPITestsSetup;
+import com.revolut.test.util.TestsUtil;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -21,9 +21,9 @@ public class MoneyTransferAPITests {
 
     @Test
     @DisplayName("Happy Money Transfer Scenario")
-    public void testHappyScenario() throws IOException {
+    public void happyScenario() throws IOException {
 
-        MoneyTransfer moneyTransfer = MoneyTransferAPITestsSetup.readMoneyTransferRequestFromFile("/requests/happyScenario.json");
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/happyScenario.json");
         given()
                 .config(RestAssured.config().jsonConfig(jsonConfig().numberReturnType(BIG_DECIMAL)))
                 .when()
@@ -43,7 +43,7 @@ public class MoneyTransferAPITests {
     @Test
     @DisplayName("Test Source Account Id Must Exist")
     void sourceAccountIdRequired() throws IOException {
-        MoneyTransfer moneyTransfer = MoneyTransferAPITestsSetup.readMoneyTransferRequestFromFile("/requests/missingSourceAccountId.json");
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/missingSourceAccountId.json");
         given()
                 .when()
                 .accept(ContentType.JSON)
@@ -60,7 +60,7 @@ public class MoneyTransferAPITests {
     @Test
     @DisplayName("Test Target Account Id Must Exist")
     void targetAccountIdRequired() throws IOException {
-        MoneyTransfer moneyTransfer = MoneyTransferAPITestsSetup.readMoneyTransferRequestFromFile("/requests/missingTargetAccountId.json");
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/missingTargetAccountId.json");
         given()
                 .when()
                 .accept(ContentType.JSON)
@@ -77,7 +77,7 @@ public class MoneyTransferAPITests {
     @Test
     @DisplayName("Test Amount Must Exist")
     void amountRequired() throws IOException {
-        MoneyTransfer moneyTransfer = MoneyTransferAPITestsSetup.readMoneyTransferRequestFromFile("/requests/missingAmount.json");
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/missingAmount.json");
         given()
                 .when()
                 .accept(ContentType.JSON)
@@ -94,7 +94,7 @@ public class MoneyTransferAPITests {
     @Test
     @DisplayName("Test Currency Must Exist")
     void currencyRequired() throws IOException {
-        MoneyTransfer moneyTransfer = MoneyTransferAPITestsSetup.readMoneyTransferRequestFromFile("/requests/missingCurrency.json");
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/missingCurrency.json");
         given()
                 .when()
                 .accept(ContentType.JSON)
@@ -111,7 +111,7 @@ public class MoneyTransferAPITests {
     @Test
     @DisplayName("Test Unkown Currency Not Accepted")
     void unkownCurrency() throws IOException {
-        String moneyTransferRequest = MoneyTransferAPITestsSetup.readStringMoneyTransferRequestFromFile("/requests/unkownCurrency.json");
+        String moneyTransferRequest = TestsUtil.readStringMoneyTransferFromFile("/requests/unkownCurrency.json");
         given()
                 .when()
                 .accept(ContentType.JSON)
@@ -124,4 +124,6 @@ public class MoneyTransferAPITests {
                         "message", equalTo("Couldn't map value: [XYZ] into type: [Currency]"));
 
     }
+
+    // TODO: Cover NoSuchAccountException
 }
