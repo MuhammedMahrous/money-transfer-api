@@ -5,6 +5,8 @@ import com.revolut.test.util.TestsUtil;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +20,18 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @QuarkusTest
 public class MoneyTransferAPITests {
+
+    private Flyway flyway;
+
+    public MoneyTransferAPITests(Flyway flyway) {
+        this.flyway = flyway;
+    }
+
+    @BeforeEach
+    void setUp() {
+        flyway.clean();
+        flyway.migrate();
+    }
 
     @Test
     @DisplayName("Happy Money Transfer Scenario")
@@ -109,7 +123,7 @@ public class MoneyTransferAPITests {
     }
 
     @Test
-    @DisplayName("Test Unkown Currency Not Accepted")
+    @DisplayName("Test Unknown Currency Not Accepted")
     void unkownCurrency() throws IOException {
         String moneyTransferRequest = TestsUtil.readStringMoneyTransferFromFile("/requests/unkownCurrency.json");
         given()
@@ -125,5 +139,59 @@ public class MoneyTransferAPITests {
 
     }
 
-    // TODO: Cover NoSuchAccountException
+    @Test
+    @DisplayName("Money transfer to same account not accepted")
+    public void sameAccount() throws IOException {
+        MoneyTransfer moneyTransferRequest = TestsUtil.readMoneyTransferFromFile("/requests/sameAccount.json");
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(moneyTransferRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1000),
+                        "message", equalTo("Can't have sourceAccount same as targetAccount"));
+    }
+
+    @Test
+    @DisplayName("Source Account doesn't exist")
+    public void invalidSourceAccountId() throws IOException {
+        MoneyTransfer invalidSourceAccountMoneyRequest =
+                TestsUtil.readMoneyTransferFromFile("/requests/invalidSourceAccount.json");
+        String errorMessage = "Account with id ["
+                + invalidSourceAccountMoneyRequest.getSourceAccountId()
+                + "] doesn't exist";
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(invalidSourceAccountMoneyRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1001),
+                        "message", equalTo(errorMessage));
+    }
+
+    @Test
+    @DisplayName("Target Account doesn't exist")
+    public void invalidTargetAccountId() throws IOException {
+        MoneyTransfer invalidSourceAccountMoneyRequest =
+                TestsUtil.readMoneyTransferFromFile("/requests/invalidTargetAccount.json");
+        String errorMessage = "Account with id ["
+                + invalidSourceAccountMoneyRequest.getTargetAccountId()
+                + "] doesn't exist";
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(invalidSourceAccountMoneyRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1001),
+                        "message", equalTo(errorMessage));
+    }
 }

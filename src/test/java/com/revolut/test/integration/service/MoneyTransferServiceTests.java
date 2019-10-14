@@ -1,18 +1,22 @@
 package com.revolut.test.integration.service;
 
+import com.revolut.exceptions.NoSuchAccountException;
+import com.revolut.exceptions.SameAccountException;
 import com.revolut.model.Account;
 import com.revolut.model.MoneyTransfer;
 import com.revolut.service.AccountService;
 import com.revolut.service.MoneyTransferService;
-import com.revolut.util.MoneyConversionUtil;
 import com.revolut.test.util.TestsUtil;
+import com.revolut.util.MoneyConversionUtil;
 import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @QuarkusTest
 public class MoneyTransferServiceTests {
@@ -52,5 +56,13 @@ public class MoneyTransferServiceTests {
         BigDecimal actualAddedAmount = afterTargetAccount.getBalance().subtract(beforeTargetAccount.getBalance());
         assertEquals(expectedAddedAmount, actualAddedAmount);
         // MoneyTransfer history updated
+        //TODO: Update
+    }
+
+    @Test
+    @DisplayName("Money transfer to same account not accepted")
+    public void sameAccount() throws IOException {
+        MoneyTransfer moneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/sameAccount.json");
+        assertThrows(SameAccountException.class, () -> moneyTransferService.transferMoney(moneyTransfer));
     }
 }

@@ -23,6 +23,14 @@ public class APIErrorsRepository {
                 APIError
                         .builder()
                         .code(1001)
+                        .httpStatus(Response.Status.BAD_REQUEST)
+                        .message("No Such Account")
+                        .build());
+
+        errorMap.put(9999,
+                APIError
+                        .builder()
+                        .code(9999)
                         .httpStatus(Response.Status.INTERNAL_SERVER_ERROR)
                         .message("Generic Error Occurred")
                         .build());

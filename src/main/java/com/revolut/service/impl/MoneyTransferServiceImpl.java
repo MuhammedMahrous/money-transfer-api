@@ -1,5 +1,6 @@
 package com.revolut.service.impl;
 
+import com.revolut.exceptions.SameAccountException;
 import com.revolut.model.Account;
 import com.revolut.model.MoneyTransfer;
 import com.revolut.service.AccountService;
@@ -23,6 +24,10 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     public MoneyTransfer transferMoney(MoneyTransfer moneyTransfer) {
         Random random = new Random();
         moneyTransfer.setId(random.nextInt() * 100000);
+
+        if (moneyTransfer.getSourceAccountId().equals(moneyTransfer.getTargetAccountId()))
+            throw new SameAccountException();
+
         Account sourceAccount = accountService.getAccountById(moneyTransfer.getSourceAccountId());
         Account targetAccount = accountService.getAccountById(moneyTransfer.getTargetAccountId());
 
