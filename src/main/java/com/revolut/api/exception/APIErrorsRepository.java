@@ -3,6 +3,7 @@ package com.revolut.api.exception;
 import com.revolut.api.exception.model.APIError;
 
 import javax.ws.rs.core.Response;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,20 @@ public class APIErrorsRepository {
                         .httpStatus(Response.Status.BAD_REQUEST)
                         .message("No Such Account")
                         .build());
+        errorMap.put(1002,
+                APIError
+                        .builder()
+                        .code(1002)
+                        .httpStatus(Response.Status.BAD_REQUEST)
+                        .message("No Enough Balance")
+                        .build());
+        errorMap.put(1003,
+                APIError
+                        .builder()
+                        .code(1003)
+                        .httpStatus(Response.Status.BAD_REQUEST)
+                        .message("Negative Amount")
+                        .build());
 
         errorMap.put(9999,
                 APIError
@@ -40,5 +55,9 @@ public class APIErrorsRepository {
     public static APIError getErrorByCode(Integer code) {
         APIError error = errorMap.get(code);
         return error == null ? errorMap.get(1001) : error;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(BigDecimal.ZERO);
     }
 }

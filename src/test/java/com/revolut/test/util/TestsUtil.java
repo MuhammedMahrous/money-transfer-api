@@ -42,8 +42,8 @@ public class TestsUtil {
 
     }
 
-    public static Integer readAccountIdFromFile(String accountIdFilePath) {
-        InputStream inputStream = TestsUtil.class.getResourceAsStream(accountIdFilePath);
+    public static Integer readIntFromFile(String filePath) {
+        InputStream inputStream = TestsUtil.class.getResourceAsStream(filePath);
         Scanner scanner = new Scanner(inputStream);
         return scanner.nextInt();
     }

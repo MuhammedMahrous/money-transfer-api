@@ -35,7 +35,7 @@ public class AccountServiceTests {
     @Test
     @DisplayName("Test Get Account By Id Happy Scenario")
     void getAccountByIdHappyScenario() throws IOException {
-        Integer getAccountId = TestsUtil.readAccountIdFromFile("/service-inputs/getAccountId.json");
+        Integer getAccountId = TestsUtil.readIntFromFile("/service-inputs/getAccountId.json");
         Account expected = TestsUtil.readAccountFromFile("/service-inputs/getAccountHappyScenario.json");
         Account actual = accountService.getAccountById(getAccountId);
         assertNotNull(actual);
@@ -56,7 +56,7 @@ public class AccountServiceTests {
     @Test
     @DisplayName("Test Update Balance Happy Scenario")
     void updateBalance() throws IOException {
-        Integer getAccountId = TestsUtil.readAccountIdFromFile("/service-inputs/getAccountId.json");
+        Integer getAccountId = TestsUtil.readIntFromFile("/service-inputs/getAccountId.json");
         Account account = accountService.getAccountById(getAccountId);
         account.setBalance(new BigDecimal(200));
         boolean updated = accountService.updateBalance(account);

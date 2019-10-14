@@ -194,4 +194,45 @@ public class MoneyTransferAPITests {
                 body("code", equalTo(1001),
                         "message", equalTo(errorMessage));
     }
+
+    @Test
+    @DisplayName("No Enough Balance")
+    public void noEnoughBalance() throws IOException {
+        MoneyTransfer invalidSourceAccountMoneyRequest =
+                TestsUtil.readMoneyTransferFromFile("/requests/noEnoughBalance.json");
+
+        String errorMessage = "Account with id ["
+                + invalidSourceAccountMoneyRequest.getSourceAccountId()
+                + "] doesn't have enough balance to make the transaction";
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(invalidSourceAccountMoneyRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1002),
+                        "message", equalTo(errorMessage));
+    }
+
+    @Test
+    @DisplayName("Negative Amount")
+    public void negativeAmount() throws IOException {
+        MoneyTransfer invalidSourceAccountMoneyRequest =
+                TestsUtil.readMoneyTransferFromFile("/requests/negativeAmount.json");
+
+        String errorMessage = "Can't transfer negative amount";
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(invalidSourceAccountMoneyRequest)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1003),
+                        "message", equalTo(errorMessage));
+    }
+
 }

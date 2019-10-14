@@ -18,3 +18,5 @@ create table money_transfer
   currency varchar(3),
   CONSTRAINT money_transfer_pk PRIMARY KEY (id)
 );
+
+create SEQUENCE money_transfer_id_seq INCREMENT 1 START 1;

@@ -22,22 +22,23 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Account getAccountById(Integer getAccountId) throws SQLException {
+    public Account getAccountById(Integer id) throws SQLException {
         Account account = null;
-        Connection connection = dataSource.getConnection();
-        PreparedStatement preparedStatement = connection
-                .prepareStatement("SELECT * FROM account WHERE id = ?");
-        preparedStatement.setInt(1, getAccountId);
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT * FROM account WHERE id = ?");
+            preparedStatement.setInt(1, id);
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            account = Account.builder()
-                    .id(resultSet.getInt(1))
-                    .balance(resultSet.getBigDecimal(2))
-                    .currency(Currency.getInstance(resultSet.getString(3)))
-                    .build();
-        } else {
-            throw new NoSuchAccountException(getAccountId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                account = Account.builder()
+                        .id(resultSet.getInt(1))
+                        .balance(resultSet.getBigDecimal(2))
+                        .currency(Currency.getInstance(resultSet.getString(3)))
+                        .build();
+            } else {
+                throw new NoSuchAccountException(id);
+            }
         }
 
         return account;
@@ -46,14 +47,15 @@ public class AccountRepositoryImpl implements AccountRepository {
     @Override
     public boolean updateBalance(Account account) throws SQLException {
         boolean updated = false;
-        Connection connection = dataSource.getConnection();
-        PreparedStatement preparedStatement = connection
-                .prepareStatement("UPDATE account SET balance = ? WHERE id = ?");
-        preparedStatement.setBigDecimal(1, account.getBalance());
-        preparedStatement.setInt(2, account.getId());
+        try (Connection connection = dataSource.getConnection()) {
+            PreparedStatement preparedStatement = connection
+                    .prepareStatement("UPDATE account SET balance = ? WHERE id = ?");
+            preparedStatement.setBigDecimal(1, account.getBalance());
+            preparedStatement.setInt(2, account.getId());
 
-        int updateResult = preparedStatement.executeUpdate();
-        updated = updateResult > 0;
+            int updateResult = preparedStatement.executeUpdate();
+            updated = updateResult > 0;
+        }
         return updated;
     }
 }
