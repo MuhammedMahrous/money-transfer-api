@@ -9,6 +9,7 @@ import com.revolut.repository.MoneyTransferRepository;
 import com.revolut.service.AccountService;
 import com.revolut.service.MoneyTransferService;
 import com.revolut.util.MoneyConversionUtil;
+import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -34,6 +35,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     }
 
     @Override
+    @Synchronized
     public MoneyTransfer transferMoney(MoneyTransfer moneyTransfer) throws Exception {
         transactionManager.begin();
         try {

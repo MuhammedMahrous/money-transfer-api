@@ -52,7 +52,7 @@ public class MoneyTransferServiceTests {
 
     @Test
     @DisplayName("Happy Scenario")
-    void happyScenario() throws Exception {
+    public void happyScenario() throws Exception {
         MoneyTransfer requestMoneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/happyScenario.json");
 
         // get Source Account Balance
