@@ -24,8 +24,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             account = accountRepository.getAccountById(getAccountId);
         } catch (SQLException e) {
-            // TODO: Change into custom exception
-            log.error("SQLException: {}", e);
+            throw new RuntimeException(e);
         }
         return account;
     }
@@ -36,8 +35,7 @@ public class AccountServiceImpl implements AccountService {
         try {
             updated = accountRepository.updateBalance(account);
         } catch (SQLException e) {
-            // TODO: Change into custom exception
-            log.error("SQLException: {}", e);
+            throw new RuntimeException(e);
         }
         return updated;
     }

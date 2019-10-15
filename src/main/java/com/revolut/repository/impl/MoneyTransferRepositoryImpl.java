@@ -41,7 +41,9 @@ public class MoneyTransferRepositoryImpl implements MoneyTransferRepository {
                         .currency(Currency.getInstance(resultSet.getString(5)))
                         .build();
             } else {
-                throw new NoSuchMoneyTransfer(id);
+                NoSuchMoneyTransfer exception = new NoSuchMoneyTransfer(id);
+                log.error(exception.getMessage());
+                throw exception;
             }
         }
 
@@ -50,7 +52,7 @@ public class MoneyTransferRepositoryImpl implements MoneyTransferRepository {
 
     @Override
     public MoneyTransfer create(MoneyTransfer moneyTransfer) throws SQLException {
-
+        log.info("Inserting the successful transaction history: {}", moneyTransfer);
         try (Connection connection = dataSource.getConnection()) {
             Integer id = getNextSequenceValue(connection);
             PreparedStatement preparedStatement = connection
@@ -66,7 +68,9 @@ public class MoneyTransferRepositoryImpl implements MoneyTransferRepository {
             if (update > 0) {
                 moneyTransfer.setId(id);
             } else {
-                throw new NoSuchMoneyTransfer(id);
+                NoSuchMoneyTransfer exception = new NoSuchMoneyTransfer(id);
+                log.error(exception.getMessage());
+                throw exception;
             }
         }
         return moneyTransfer;
@@ -85,5 +89,3 @@ public class MoneyTransferRepositoryImpl implements MoneyTransferRepository {
         }
     }
 }
-
-// TODO: logs

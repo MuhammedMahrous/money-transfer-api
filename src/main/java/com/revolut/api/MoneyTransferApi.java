@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
-import java.sql.SQLException;
 
 @Path("/moneyTransfer")
 @Slf4j
@@ -25,6 +24,7 @@ public class MoneyTransferApi {
     @Consumes({"application/json"})
     @Produces({"application/json"})
     public Response transferMoney(@Valid MoneyTransfer moneyTransfer) throws Exception {
+        log.debug("Received moneyTransfer: {}", moneyTransfer);
         MoneyTransfer moneyTransferResponse = moneyTransferService.transferMoney(moneyTransfer);
         return Response
                 .status(Response.Status.CREATED)

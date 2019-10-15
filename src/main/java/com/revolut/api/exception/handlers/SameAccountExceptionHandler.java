@@ -14,6 +14,7 @@ import javax.ws.rs.ext.Provider;
 public class SameAccountExceptionHandler implements ExceptionMapper<SameAccountException> {
     @Override
     public Response toResponse(SameAccountException exception) {
+        log.error(exception.getMessage());
         APIError apiError = APIErrorsRepository.getErrorByCode(1000);
         apiError.setMessage(exception.getMessage());
         return Response.status(apiError.getHttpStatus())

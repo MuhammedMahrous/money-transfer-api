@@ -39,37 +39,42 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     public MoneyTransfer transferMoney(MoneyTransfer moneyTransfer) throws Exception {
         transactionManager.begin();
         try {
-            if (moneyTransfer.getSourceAccountId().equals(moneyTransfer.getTargetAccountId()))
+            if (moneyTransfer.getSourceAccountId().equals(moneyTransfer.getTargetAccountId())) {
                 throw new SameAccountException();
+            }
 
             Account sourceAccount = accountService.getAccountById(moneyTransfer.getSourceAccountId());
             Account targetAccount = accountService.getAccountById(moneyTransfer.getTargetAccountId());
-            log.info("sourceAccount before money transfer: {}", sourceAccount);
-            log.info("targetAccount before money transfer: {}", targetAccount);
+            log.debug("sourceAccount before money transfer: {}", sourceAccount);
+            log.debug("targetAccount before money transfer: {}", targetAccount);
 
             BigDecimal amountInSourceCurrency =
                     MoneyConversionUtil.convert(moneyTransfer.getAmount(),
                             moneyTransfer.getCurrency(), sourceAccount.getCurrency());
+            log.debug("amount to be taken from source account: {}", amountInSourceCurrency);
 
             validateAmount(sourceAccount, amountInSourceCurrency);
 
             BigDecimal amountInTargetCurrency =
                     MoneyConversionUtil.convert(moneyTransfer.getAmount(),
                             moneyTransfer.getCurrency(), targetAccount.getCurrency());
+            log.debug("amount to be taken added to target account: {}", amountInTargetCurrency);
 
             sourceAccount.setBalance(sourceAccount.getBalance().subtract(amountInSourceCurrency));
-
             targetAccount.setBalance(targetAccount.getBalance().add(amountInTargetCurrency));
 
             accountService.updateBalance(sourceAccount);
             accountService.updateBalance(targetAccount);
 
-            log.info("sourceAccount after money transfer: {}", sourceAccount);
-            log.info("targetAccount after money transfer: {}", targetAccount);
+            log.debug("sourceAccount after money transfer: {}", sourceAccount);
+            log.debug("targetAccount after money transfer: {}", targetAccount);
+
             create(moneyTransfer);
             transactionManager.commit();
 
         } catch (Exception e) {
+            log.error("An error occurred while transferring money, will rollback");
+            log.error("Stack trace: {}", e);
             transactionManager.rollback();
             throw e;
         }

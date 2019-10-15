@@ -65,6 +65,4 @@ public class AccountServiceTests {
         BigDecimal expected = new BigDecimal(200);
         assertEquals(expected, actual);
     }
-
-    // TODO: tests naming convention
 }

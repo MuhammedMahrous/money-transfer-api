@@ -18,7 +18,6 @@ public class InvalidFormatExceptionHandler implements ExceptionMapper<InvalidFor
     public Response toResponse(InvalidFormatException exception) {
         APIError apiError = APIErrorsRepository.getErrorByCode(1000);
         StringBuilder messageBuilder = new StringBuilder();
-
         String failedParsingTypeName = exception.getTargetType().getSimpleName();
         String failedParsingValue = exception.getValue().toString();
         messageBuilder.append("Couldn't map value: [");
@@ -27,6 +26,7 @@ public class InvalidFormatExceptionHandler implements ExceptionMapper<InvalidFor
         messageBuilder.append(failedParsingTypeName);
         messageBuilder.append("]");
         apiError.setMessage(messageBuilder.toString());
+        log.error(messageBuilder.toString());
         return Response.status(apiError.getHttpStatus())
                 .entity(apiError)
                 .build();

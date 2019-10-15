@@ -14,6 +14,7 @@ import javax.ws.rs.ext.Provider;
 public class NoEnoughBalanceExceptionHandler implements ExceptionMapper<NoEnoughBalanceException> {
     @Override
     public Response toResponse(NoEnoughBalanceException exception) {
+        log.error(exception.getMessage());
         APIError apiError = APIErrorsRepository.getErrorByCode(1002);
         apiError.setMessage(exception.getMessage());
         return Response.status(apiError.getHttpStatus())

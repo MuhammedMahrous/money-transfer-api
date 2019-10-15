@@ -57,7 +57,4 @@ public class APIErrorsRepository {
         return error == null ? errorMap.get(1001) : error;
     }
 
-    public static void main(String[] args) {
-        System.out.println(BigDecimal.ZERO);
-    }
 }

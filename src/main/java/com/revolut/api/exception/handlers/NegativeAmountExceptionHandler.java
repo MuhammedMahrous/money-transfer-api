@@ -14,6 +14,7 @@ import javax.ws.rs.ext.Provider;
 public class NegativeAmountExceptionHandler implements ExceptionMapper<NegativeAmountException> {
     @Override
     public Response toResponse(NegativeAmountException exception) {
+        log.error(exception.getMessage());
         APIError apiError = APIErrorsRepository.getErrorByCode(1003);
         apiError.setMessage(exception.getMessage());
         return Response.status(apiError.getHttpStatus())

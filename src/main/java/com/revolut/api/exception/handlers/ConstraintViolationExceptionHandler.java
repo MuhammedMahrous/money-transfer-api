@@ -27,6 +27,7 @@ public class ConstraintViolationExceptionHandler implements ExceptionMapper<Cons
                 messageBuilder.append(" ,");
         }
         apiError.setMessage(messageBuilder.toString());
+        log.error(messageBuilder.toString());
         return Response.status(apiError.getHttpStatus())
                 .entity(apiError)
                 .build();

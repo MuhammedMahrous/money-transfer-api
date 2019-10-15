@@ -124,7 +124,7 @@ public class MoneyTransferAPITests {
 
     @Test
     @DisplayName("Test Unknown Currency Not Accepted")
-    void unkownCurrency() throws IOException {
+    void unknownCurrency() throws IOException {
         String moneyTransferRequest = TestsUtil.readStringMoneyTransferFromFile("/requests/unkownCurrency.json");
         given()
                 .when()
