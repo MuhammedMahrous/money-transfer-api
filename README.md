@@ -2,11 +2,14 @@
 
 This is a toy project for a simple Money Transfer API, 
 it exposes rest endpoint to make money transfer between already existing
-accounts. It supports making the transaction in different currencies `[USD and EUR]` other
+accounts. It supports making the transaction in different currencies **[USD and EUR] **other
 than the source account currency, it uses H2 in-mem database with FlyWay for 
 startup data migration from sql script found in : `src/main/resources/db/migration`
 
-To run the application you need JRE11 and Maven
+## Prerequeisites 
+- Maven
+- JRE 11
+
 ## Install
 
     mvn clean install
@@ -18,7 +21,17 @@ To run the application you need JRE11 and Maven
 ## Run the tests
 	mvn test
 
-# REST API
+#Tech. Stack
+- Java 11
+- Quarkus 0.23.2
+- RestEasy
+- Flyway
+- JDBC
+- H2 
+- Lombok
+- RestAssured
+- Junit 5 
+# Usage
 
 A **Postman** collection found [here](https://github.com/MuhammedMahrous/money-transfer-api/blob/master/MoneyTransferAPI.postman_collection.json "here") has the basic scenarios for running the app,
 except the **No Enough Balance** case which will require making one account of the two
