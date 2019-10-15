@@ -235,4 +235,23 @@ public class MoneyTransferAPITests {
                         "message", equalTo(errorMessage));
     }
 
+    @Test
+    @DisplayName("Invalid JSON")
+    public void invalidJSON() throws IOException {
+        String invalidJSON =
+                TestsUtil.readStringMoneyTransferFromFile("/requests/invalidJson.json");
+
+        String errorMessage = "Invalid JSON";
+        given()
+                .when()
+                .accept(ContentType.JSON)
+                .contentType(ContentType.JSON)
+                .body(invalidJSON)
+                .post("/moneyTransfer")
+                .then()
+                .statusCode(400).
+                body("code", equalTo(1001),
+                        "message", equalTo(errorMessage));
+    }
+
 }

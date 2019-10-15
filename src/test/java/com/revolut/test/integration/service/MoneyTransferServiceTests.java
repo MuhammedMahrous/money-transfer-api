@@ -13,6 +13,7 @@ import com.revolut.util.MoneyConversionUtil;
 import io.quarkus.test.junit.QuarkusTest;
 import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
@@ -69,7 +71,7 @@ public class MoneyTransferServiceTests {
         BigDecimal expectedSubtractedAmount = MoneyConversionUtil
                 .convert(requestMoneyTransfer.getAmount(), requestMoneyTransfer.getCurrency(), afterSourceAccount.getCurrency());
         BigDecimal actualSubtractedAmount = beforeSourceAccount.getBalance().subtract(afterSourceAccount.getBalance());
-        assertEquals(expectedSubtractedAmount, actualSubtractedAmount);
+        assertThat(expectedSubtractedAmount, Matchers.comparesEqualTo(actualSubtractedAmount));
 
         // Assert target account has new amount removed
         Account afterTargetAccount = accountService.getAccountById(requestMoneyTransfer.getTargetAccountId());
@@ -77,7 +79,7 @@ public class MoneyTransferServiceTests {
         BigDecimal expectedAddedAmount = MoneyConversionUtil
                 .convert(requestMoneyTransfer.getAmount(), requestMoneyTransfer.getCurrency(), afterTargetAccount.getCurrency());
         BigDecimal actualAddedAmount = afterTargetAccount.getBalance().subtract(beforeTargetAccount.getBalance());
-        assertEquals(expectedAddedAmount, actualAddedAmount);
+        assertThat(expectedAddedAmount, Matchers.comparesEqualTo(actualAddedAmount));
 
         // MoneyTransfer history updated
         MoneyTransfer actualMoneyTransfer = moneyTransferService.getById(requestMoneyTransfer.getId());
