@@ -11,28 +11,48 @@ import com.revolut.service.MoneyTransferService;
 import com.revolut.test.util.TestsUtil;
 import com.revolut.util.MoneyConversionUtil;
 import io.quarkus.test.junit.QuarkusTest;
+import lombok.extern.slf4j.Slf4j;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
+@Slf4j
 public class MoneyTransferServiceTests {
     private MoneyTransferService moneyTransferService;
     private AccountService accountService;
+    private DataSource dataSource;
+    private Flyway flyway;
 
-    public MoneyTransferServiceTests(MoneyTransferService moneyTransferService, AccountService accountService) {
+    public MoneyTransferServiceTests(
+            MoneyTransferService moneyTransferService
+            , AccountService accountService,
+            DataSource dataSource,
+            Flyway flyway) {
         this.moneyTransferService = moneyTransferService;
         this.accountService = accountService;
+        this.dataSource = dataSource;
+        this.flyway = flyway;
+    }
+
+    @BeforeEach
+    void setUp() {
+        flyway.clean();
+        flyway.migrate();
     }
 
     @Test
     @DisplayName("Happy Scenario")
-    void happyScenario() throws IOException, SQLException {
+    void happyScenario() throws Exception {
         MoneyTransfer requestMoneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/happyScenario.json");
 
         // get Source Account Balance
@@ -63,6 +83,30 @@ public class MoneyTransferServiceTests {
         MoneyTransfer actualMoneyTransfer = moneyTransferService.getById(requestMoneyTransfer.getId());
 
         validateMoneyTransfer(requestMoneyTransfer, actualMoneyTransfer);
+    }
+
+    @Test
+    @DisplayName("Transaction Support")
+    void transactionSupport() throws Exception {
+        MoneyTransfer requestMoneyTransfer = TestsUtil.readMoneyTransferFromFile("/requests/happyScenario.json");
+
+        Account beforeSourceAccount = accountService.getAccountById(requestMoneyTransfer.getSourceAccountId());
+        Account beforeTargetAccount = accountService.getAccountById(requestMoneyTransfer.getTargetAccountId());
+
+        // Drop money-transfer table to simulate an exception
+        dropMoneyTransferTable();
+        try {
+            moneyTransferService.transferMoney(requestMoneyTransfer);
+        } catch (Exception e) {
+            log.info("Exception is thrown as anticipated");
+        }
+        // Assert that both source and target accounts balances didn't change due to an exception happening
+        Account afterSourceAccount = accountService.getAccountById(requestMoneyTransfer.getSourceAccountId());
+        assertEquals(beforeSourceAccount.getBalance(), afterSourceAccount.getBalance());
+
+        Account afterTargetAccount = accountService.getAccountById(requestMoneyTransfer.getTargetAccountId());
+        assertEquals(beforeTargetAccount.getBalance(), afterTargetAccount.getBalance());
+
     }
 
     @Test
@@ -122,5 +166,11 @@ public class MoneyTransferServiceTests {
         assertEquals(expected.getSourceAccountId(), actual.getSourceAccountId());
         assertEquals(expected.getTargetAccountId(), actual.getTargetAccountId());
         assertEquals(expected.getCurrency(), actual.getCurrency());
+    }
+
+    private void dropMoneyTransferTable() throws SQLException {
+        try (Connection connection = dataSource.getConnection()) {
+            connection.createStatement().execute("DROP TABLE money_transfer");
+        }
     }
 }

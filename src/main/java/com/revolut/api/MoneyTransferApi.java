@@ -24,7 +24,7 @@ public class MoneyTransferApi {
     @POST
     @Consumes({"application/json"})
     @Produces({"application/json"})
-    public Response transferMoney(@Valid MoneyTransfer moneyTransfer) throws SQLException {
+    public Response transferMoney(@Valid MoneyTransfer moneyTransfer) throws Exception {
         MoneyTransfer moneyTransferResponse = moneyTransferService.transferMoney(moneyTransfer);
         return Response
                 .status(Response.Status.CREATED)
